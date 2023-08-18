@@ -45,7 +45,11 @@ func getPerson(w http.ResponseWriter, r *http.Request) {
 
 	person := repository.GetPerson(id)
 
-	json.NewEncoder(w).Encode(person)
+	err = json.NewEncoder(w).Encode(person)
+	if err != nil {
+		http.Error(w, "", http.StatusInternalServerError)
+		return
+	}
 }
 
 // GET /pessoas?t=[:termo da busca] – para fazer uma busca por pessoas.
@@ -60,8 +64,11 @@ func searchPerson(w http.ResponseWriter, r *http.Request) {
 	people := repository.SearchPeople(term)
 
 	// return the results as a JSON array
-	json.NewEncoder(w).Encode(people)
-
+	err := json.NewEncoder(w).Encode(people)
+	if err != nil {
+		http.Error(w, "", http.StatusInternalServerError)
+		return
+	}
 }
 
 // POST /pessoas – para criar um recurso pessoa.

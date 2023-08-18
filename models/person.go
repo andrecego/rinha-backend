@@ -6,34 +6,39 @@ import (
 )
 
 type Person struct {
-	ID       uuid.UUID      `json:"id" gorm:"type:uuid;primary_key;default:uuid_generate_v4();not null"`
-	Nickname string         `json:"apelido"`
-	Name     string         `json:"nome"` // gorm:"not null;unique"
-	Birthday Date           `json:"nascimento"`
-	Stack    pq.StringArray `json:"stack" gorm:"type:text[]"`
+	ID       uuid.UUID      `json:"id,omitempty" gorm:"type:uuid;primary_key;default:uuid_generate_v4();not null"`
+	Nickname string         `json:"apelido,omitempty" gorm:"unique"`
+	Name     string         `json:"nome,omitempty"` // gorm:"not null;unique"
+	Birthday Date           `json:"nascimento,omitempty"`
+	Stack    pq.StringArray `json:"stack,omitempty" gorm:"type:text[]"`
 }
+
+const (
+	MaxNameLength     = 100
+	MaxNicknameLength = 32
+	MaxStackLength    = 32
+)
 
 // IMPROVEMENT: check nickname uniqueness
 func (p Person) Validate() bool {
-	// Nickname	has to be at most 32 characters long.
 	if len(p.Nickname) == 0 {
 		return false
 	}
-	if len(p.Nickname) > 32 {
-		return false
-	}
 
-	// Name	has to be at most 100 characters long.
 	if len(p.Name) == 0 {
 		return false
 	}
-	if len(p.Name) > 100 {
+
+	if len(p.Name) > MaxNameLength {
 		return false
 	}
 
-	// Stack if present, has to be a list of strings with at most 32 characters each.
+	if len(p.Nickname) > MaxNicknameLength {
+		return false
+	}
+
 	for _, s := range p.Stack {
-		if len(s) > 32 {
+		if len(s) > MaxStackLength {
 			return false
 		}
 	}
