@@ -16,18 +16,27 @@ func Conn() *gorm.DB {
 	}
 
 	db, err := gorm.Open(postgres.New(postgres.Config{
-		DSN:                  "host=localhost user=postgres password=postgres dbname=postgres port=5432 sslmode=disable TimeZone=Asia/Shanghai", // data source name, refer https://github.com/jackc/pgx
-		PreferSimpleProtocol: true,                                                                                                              // disables implicit prepared statement usage. By default pgx automatically uses the extended protocol
+		DSN:                  "host=db user=postgres password=postgres dbname=postgres port=5432 sslmode=disable", // data source name, refer https://github.com/jackc/pgx
+		PreferSimpleProtocol: true,                                                                                // disables implicit prepared statement usage. By default pgx automatically uses the extended protocol
 	}), &gorm.Config{})
 	if err != nil {
 		panic(err)
 	}
+
+	sqlDB, err := db.DB()
+	if err != nil {
+		panic(err)
+	}
+
+	sqlDB.SetMaxIdleConns(25)
+	sqlDB.SetMaxOpenConns(50)
 
 	database = db
 	return database
 }
 
 func Init() {
+	dropAllTables()
 	CreateDatabaseExtentions()
 	Migrate()
 	// CreateDatabase()
@@ -43,11 +52,11 @@ func CreateDatabaseExtentions() {
 	db.Exec("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";")
 }
 
-func CreateDatabase() {
-	// fmt.Println("Creating database...")
-	// db := Conn()
-	// result := db.Exec("CREATE DATABASE IF NOT EXISTS postgres")
-	// fmt.Println("CreateDatabase result: ", result)
+func dropAllTables() {
+	fmt.Println("Dropping all tables...")
+	db := Conn()
+	result := db.Exec(`DROP TABLE IF EXISTS people`)
+	fmt.Println("dropAllTables result: ", result)
 }
 
 func CreatePersonTable() {

@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"fmt"
 	"log"
 	"rinha/database"
 	"rinha/models"
@@ -9,12 +8,14 @@ import (
 	"github.com/google/uuid"
 )
 
-func CreatePerson(person models.Person) {
+func CreatePerson(person models.Person) error {
 	// save the person in the database
 	db := database.Conn()
 	person.ID = uuid.New()
+
 	result := db.Create(&person)
-	fmt.Println("[CreatePerson] Result: ", result)
+
+	return result.Error
 }
 
 // Create a func to count the number of people in the database

@@ -1,9 +1,10 @@
 version: '3.5'
 
 services:
-  api1: # API - Instância 01
+  api1: &api
     image: api
     hostname: api1
+    command: /bin/sh -c "/app/main"
     depends_on:
       - db
     expose:
@@ -11,21 +12,17 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.25'
-          memory: '0.5GB'
+          cpus: '0.3'
+          memory: '0.2GB'
 
-  api2: # API - Instância 01
-    image: api
+  api2:
+    <<: *api
     hostname: api2
-    depends_on:
-      - db
-    expose:
-      - "80"
     deploy:
       resources:
         limits:
-          cpus: '0.25'
-          memory: '0.5GB'
+          cpus: '0.35'
+          memory: '0.2GB'
 
   nginx: # Load Balancer
     image: nginx:latest
@@ -39,7 +36,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.25'
+          cpus: '0.15'
           memory: '0.5GB'
 
   db: # Banco de dados
@@ -51,6 +48,6 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.75'
+          cpus: '0.7'
           memory: '1.5GB'
 

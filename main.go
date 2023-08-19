@@ -102,7 +102,6 @@ func createPerson(w http.ResponseWriter, r *http.Request) {
 	// returns status code 201 with Location header set to /pessoas/[:id]
 	w.WriteHeader(http.StatusCreated)
 	w.Header().Set("Location", "/pessoas/"+person.ID.String())
-
 }
 
 // GET /contagem-pessoas – endpoint especial para contagem de pessoas cadastradas.
@@ -122,7 +121,7 @@ func main() {
 	http.HandleFunc("/pessoas/", personRouter)
 	http.HandleFunc("/contagem-pessoas/", getPersonCount)
 
-	err := http.ListenAndServe(":3333", nil)
+	err := http.ListenAndServe(":80", nil)
 	if err != nil {
 		panic(err)
 	}
